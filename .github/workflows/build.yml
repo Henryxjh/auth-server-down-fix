@@ -28,3 +28,10 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+
+      - name: Upload built mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: authserverdownfix-build
+          path: build/libs/*.jar
+          if-no-files-found: error
