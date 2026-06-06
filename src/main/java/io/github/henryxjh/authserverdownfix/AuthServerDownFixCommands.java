@@ -13,8 +13,8 @@ public final class AuthServerDownFixCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal(authserverdownfix.MODID)
-                .requires(source -> source.hasPermission(4))
                 .then(Commands.literal("enableUnsafeLogin")
+                        .requires(source -> source.hasPermission(4))
                         .then(Commands.argument("enabled", BoolArgumentType.bool())
                                 .executes(context -> setUnsafeLogin(
                                         context.getSource(),
@@ -43,6 +43,12 @@ public final class AuthServerDownFixCommands {
         source.sendSuccess(() -> Component.literal(
                 "Unsafe login mode is " + (enabled ? "enabled" : "disabled") + "."
         ).withStyle(enabled ? ChatFormatting.RED : ChatFormatting.GREEN), false);
+        if (source.getPlayer() != null) {
+            boolean unsafePlayer = AuthRecoveryMonitor.isUnsafePlayer(source.getPlayer().getUUID());
+            source.sendSuccess(() -> Component.literal(
+                    "You " + (unsafePlayer ? "joined through unsafe UUID lookup." : "completed normal online authentication.")
+            ).withStyle(unsafePlayer ? ChatFormatting.RED : ChatFormatting.GREEN), false);
+        }
         return enabled ? 1 : 0;
     }
 }

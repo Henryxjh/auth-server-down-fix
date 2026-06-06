@@ -115,6 +115,10 @@ public final class AuthRecoveryMonitor {
         }
     }
 
+    public static boolean isUnsafePlayer(UUID uuid) {
+        return ONLINE_UNSAFE_PLAYERS.contains(uuid);
+    }
+
     private static void probeAuthenticationServer(MinecraftSessionService sessionService) {
         try {
             sessionService.hasJoinedServer(PROBE_USERNAME, PROBE_SERVER_ID, null);
