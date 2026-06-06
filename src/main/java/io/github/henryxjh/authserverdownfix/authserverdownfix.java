@@ -8,8 +8,11 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 
 @Mod(authserverdownfix.MODID)
@@ -21,16 +24,43 @@ public class authserverdownfix {
         LOGGER.info("Loading Auth Server Down Fix");
         modEventBus.addListener(this::onConfigLoaded);
         NeoForge.EVENT_BUS.addListener(this::onServerStarting);
+        NeoForge.EVENT_BUS.addListener(this::onServerStopping);
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
+        NeoForge.EVENT_BUS.addListener(this::onPlayerLoggedIn);
+        NeoForge.EVENT_BUS.addListener(this::onPlayerLoggedOut);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void onServerStarting(ServerStartingEvent event) {
         UnsafeLoginMode.reset();
+        AuthRecoveryMonitor.reset(event.getServer());
+        if (ManualStartupConfig.forceUnsafeLoginOnStartup()) {
+            LOGGER.warn(
+                    "Forcing unsafe login mode on startup because forceUnsafeLoginOnStartup=true in {}",
+                    ManualStartupConfig.FILE_NAME
+            );
+            UnsafeLoginMode.setEnabled(event.getServer(), true);
+        }
+    }
+
+    private void onServerStopping(ServerStoppingEvent event) {
+        AuthRecoveryMonitor.stop();
     }
 
     private void onRegisterCommands(RegisterCommandsEvent event) {
         AuthServerDownFixCommands.register(event.getDispatcher());
+    }
+
+    private void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            AuthRecoveryMonitor.onPlayerLoggedIn(player);
+        }
+    }
+
+    private void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            AuthRecoveryMonitor.onPlayerLoggedOut(player);
+        }
     }
 
     private void onConfigLoaded(ModConfigEvent event) {
@@ -52,5 +82,9 @@ public class authserverdownfix {
                     "https://api.minecraftservices.com/minecraft/profile/lookup/name/{name}"
             );
         }
+        LOGGER.info(
+                "Auth Server Down Fix unsafe-player kick delay after authentication recovery: {} seconds (0 disables)",
+                Config.getUnsafePlayerKickDelaySeconds()
+        );
     }
 }

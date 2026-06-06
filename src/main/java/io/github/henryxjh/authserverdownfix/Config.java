@@ -38,6 +38,56 @@ public final class Config {
             )
             .defineListAllowEmpty("fallbackProfiles", List.of(), () -> "", Config::validateFallbackProfile);
 
+    public static final ModConfigSpec.IntValue UNSAFE_PLAYER_KICK_DELAY_SECONDS = BUILDER
+            .comment(
+                    "Seconds to wait after the Mojang authentication server connection recovers before disconnecting players who joined through unsafe UUID lookup.",
+                    "Set to 0 to disable automatic disconnection."
+            )
+            .defineInRange("unsafePlayerKickDelaySeconds", 60, 0, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.ConfigValue<String> UNSAFE_LOGIN_ENABLED_BROADCAST = BUILDER
+            .comment("Broadcast message sent when unsafe login mode is enabled.")
+            .define(
+                    "unsafeLoginEnabledBroadcast",
+                    "WARNING: Unsafe login mode is enabled. If Mojang authentication servers are unavailable, "
+                            + "players may join without completing live online authentication. Do not grant sensitive "
+                            + "permissions while this mode is enabled."
+            );
+
+    public static final ModConfigSpec.ConfigValue<String> UNSAFE_LOGIN_DISABLED_BROADCAST = BUILDER
+            .comment("Broadcast message sent when unsafe login mode is disabled.")
+            .define(
+                    "unsafeLoginDisabledBroadcast",
+                    "Unsafe login mode is disabled. Players must complete vanilla online authentication."
+            );
+
+    public static final ModConfigSpec.ConfigValue<String> AUTHENTICATION_RECOVERED_BROADCAST = BUILDER
+            .comment("Broadcast message sent when the connection to the Mojang authentication server recovers.")
+            .define(
+                    "authenticationRecoveredBroadcast",
+                    "Mojang authentication server connection has recovered."
+            );
+
+    public static final ModConfigSpec.ConfigValue<String> UNSAFE_PLAYER_KICK_COUNTDOWN_BROADCAST = BUILDER
+            .comment(
+                    "Broadcast message sent when unsafe-login players are scheduled to be disconnected.",
+                    "Use {seconds} for the remaining number of seconds."
+            )
+            .define(
+                    "unsafePlayerKickCountdownBroadcast",
+                    "Players who joined through unsafe login will be disconnected in {seconds} seconds."
+            );
+
+    public static final ModConfigSpec.ConfigValue<String> UNSAFE_PLAYERS_KICKED_BROADCAST = BUILDER
+            .comment(
+                    "Broadcast message sent after unsafe-login players are disconnected.",
+                    "Use {players} for the comma-separated player name list."
+            )
+            .define(
+                    "unsafePlayersKickedBroadcast",
+                    "Disconnected unsafe-login players: {players}"
+            );
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {
@@ -61,6 +111,30 @@ public final class Config {
                 .filter(profile -> profile.name().equalsIgnoreCase(username))
                 .findFirst()
                 .map(profile -> new GameProfile(profile.uuid(), profile.name()));
+    }
+
+    public static int getUnsafePlayerKickDelaySeconds() {
+        return UNSAFE_PLAYER_KICK_DELAY_SECONDS.getAsInt();
+    }
+
+    public static String getUnsafeLoginEnabledBroadcast() {
+        return UNSAFE_LOGIN_ENABLED_BROADCAST.get();
+    }
+
+    public static String getUnsafeLoginDisabledBroadcast() {
+        return UNSAFE_LOGIN_DISABLED_BROADCAST.get();
+    }
+
+    public static String getAuthenticationRecoveredBroadcast() {
+        return AUTHENTICATION_RECOVERED_BROADCAST.get();
+    }
+
+    public static String getUnsafePlayerKickCountdownBroadcast(int seconds) {
+        return UNSAFE_PLAYER_KICK_COUNTDOWN_BROADCAST.get().replace("{seconds}", Integer.toString(seconds));
+    }
+
+    public static String getUnsafePlayersKickedBroadcast(String players) {
+        return UNSAFE_PLAYERS_KICKED_BROADCAST.get().replace("{players}", players);
     }
 
     private static boolean validateCustomProfileApi(Object value) {

@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
+import io.github.henryxjh.authserverdownfix.AuthRecoveryMonitor;
 import io.github.henryxjh.authserverdownfix.Config;
 import io.github.henryxjh.authserverdownfix.UnsafeLoginMode;
 import org.spongepowered.asm.mixin.Mixin;
@@ -52,6 +53,7 @@ public class ServerLoginPacketListenerImplMixin {
         try {
             return sessionService.hasJoinedServer(username, serverId, address);
         } catch (AuthenticationUnavailableException exception) {
+            AuthRecoveryMonitor.onAuthenticationUnavailable(sessionService);
             authserverdownfix$LOGGER.info(
                     "Authentication session service is unavailable for {}, trying fallback UUID lookup",
                     username
@@ -73,6 +75,7 @@ public class ServerLoginPacketListenerImplMixin {
 
             Optional<GameProfile> profile = authserverdownfix$fetchMojangApiProfile(username);
             if (profile.isPresent()) {
+                AuthRecoveryMonitor.markPendingUnsafe(profile.get());
                 return new ProfileResult(profile.get());
             }
 

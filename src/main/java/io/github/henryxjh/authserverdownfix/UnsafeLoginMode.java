@@ -29,17 +29,11 @@ public final class UnsafeLoginMode {
 
         UnsafeLoginMode.enabled = enabled;
         if (enabled) {
-            Component warning = Component.literal(
-                    "WARNING: Unsafe login mode is enabled. If Mojang authentication servers are unavailable, "
-                            + "players may join without completing live online authentication. Do not grant sensitive "
-                            + "permissions while this mode is enabled."
-            ).withStyle(ChatFormatting.RED);
+            Component warning = Component.literal(Config.getUnsafeLoginEnabledBroadcast()).withStyle(ChatFormatting.RED);
             server.getPlayerList().broadcastSystemMessage(warning, false);
             LOGGER.warn("Unsafe login mode was enabled for this server session");
         } else {
-            Component message = Component.literal(
-                    "Unsafe login mode is disabled. Players must complete vanilla online authentication."
-            ).withStyle(ChatFormatting.GREEN);
+            Component message = Component.literal(Config.getUnsafeLoginDisabledBroadcast()).withStyle(ChatFormatting.GREEN);
             server.getPlayerList().broadcastSystemMessage(message, false);
             LOGGER.info("Unsafe login mode was disabled for this server session");
         }
