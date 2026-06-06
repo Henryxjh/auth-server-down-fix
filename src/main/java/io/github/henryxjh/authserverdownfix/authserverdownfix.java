@@ -2,23 +2,35 @@ package io.github.henryxjh.authserverdownfix;
 
 import com.mojang.logging.LogUtils;
 import java.util.List;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 
-@Mod(value = authserverdownfix.MODID, dist = Dist.DEDICATED_SERVER)
+@Mod(authserverdownfix.MODID)
 public class authserverdownfix {
     public static final String MODID = "authserverdownfix";
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public authserverdownfix(IEventBus modEventBus, ModContainer modContainer) {
-        LOGGER.info("Loading Auth Server Down Fix on dedicated server");
+        LOGGER.info("Loading Auth Server Down Fix");
         modEventBus.addListener(this::onConfigLoaded);
+        NeoForge.EVENT_BUS.addListener(this::onServerStarting);
+        NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
+
+    private void onServerStarting(ServerStartingEvent event) {
+        UnsafeLoginMode.reset();
+    }
+
+    private void onRegisterCommands(RegisterCommandsEvent event) {
+        AuthServerDownFixCommands.register(event.getDispatcher());
     }
 
     private void onConfigLoaded(ModConfigEvent event) {

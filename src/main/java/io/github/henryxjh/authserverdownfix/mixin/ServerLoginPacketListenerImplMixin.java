@@ -20,10 +20,9 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 import io.github.henryxjh.authserverdownfix.Config;
-import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+import io.github.henryxjh.authserverdownfix.UnsafeLoginMode;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.slf4j.Logger;
@@ -64,6 +63,14 @@ public class ServerLoginPacketListenerImplMixin {
                     address,
                     exception
             );
+            if (!UnsafeLoginMode.isEnabled()) {
+                authserverdownfix$LOGGER.warn(
+                        "Unsafe login mode is disabled; keeping vanilla authentication server disconnect for {}",
+                        username
+                );
+                throw exception;
+            }
+
             Optional<GameProfile> profile = authserverdownfix$fetchMojangApiProfile(username);
             if (profile.isPresent()) {
                 return new ProfileResult(profile.get());
@@ -251,10 +258,4 @@ public class ServerLoginPacketListenerImplMixin {
                 + "-"
                 + id.substring(20));
     }
-}
-
-@Mixin(ServerLoginPacketListenerImpl.class)
-interface ServerLoginPacketListenerImplAccessor {
-    @Invoker("startClientVerification")
-    void authserverdownfix$startClientVerification(GameProfile authenticatedProfile);
 }

@@ -3,8 +3,10 @@
   "package": "io.github.henryxjh.authserverdownfix.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ServerLoginPacketListenerImplAccessor",
     "ServerLoginPacketListenerImplMixin"
+  ],
+  "client": [
+    "ClientHandshakePacketListenerImplMixin"
   ],
   "injectors": {
     "defaultRequire": 1
