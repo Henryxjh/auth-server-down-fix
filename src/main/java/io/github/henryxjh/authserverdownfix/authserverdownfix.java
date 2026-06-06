@@ -2,6 +2,7 @@ package io.github.henryxjh.authserverdownfix;
 
 import com.mojang.logging.LogUtils;
 import java.util.List;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -15,7 +16,7 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 
-@Mod(authserverdownfix.MODID)
+@Mod(value = authserverdownfix.MODID, dist = Dist.DEDICATED_SERVER)
 public class authserverdownfix {
     public static final String MODID = "authserverdownfix";
     private static final Logger LOGGER = LogUtils.getLogger();

@@ -5,9 +5,6 @@
   "mixins": [
     "ServerLoginPacketListenerImplMixin"
   ],
-  "client": [
-    "ClientHandshakePacketListenerImplMixin"
-  ],
   "injectors": {
     "defaultRequire": 1
   },
