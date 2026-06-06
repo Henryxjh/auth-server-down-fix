@@ -2,7 +2,10 @@
   "required": true,
   "package": "io.github.henryxjh.authserverdownfix.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "ServerLoginPacketListenerImplAccessor",
+    "ServerLoginPacketListenerImplMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },
