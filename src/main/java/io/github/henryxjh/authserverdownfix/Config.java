@@ -34,7 +34,7 @@ public final class Config {
                     "Name to UUID mappings used when Mojang authentication servers and profile lookup APIs are unavailable.",
                     "Format: name=uuid",
                     "Accepted UUID formats: 32-character undashed UUID, or 36-character dashed UUID.",
-                    "Examples: 00000000000000000000000000000000 or 00000000-0000-0000-0000-000000000000"
+                    "Examples: Notch=069a79f444e94726a5befca90e38aaf5 or Notch=069a79f4-44e9-4726-a5be-fca90e38aaf5"
             )
             .defineListAllowEmpty("fallbackProfiles", List.of(), () -> "", Config::validateFallbackProfile);
 
