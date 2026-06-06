@@ -79,6 +79,21 @@ public final class AuthRecoveryMonitor {
         }
     }
 
+    public static void onPlayerAuthenticatedNormally(GameProfile profile) {
+        synchronized (MONITOR_LOCK) {
+            if (recoveryTask == null || recoveryTask.isDone()) {
+                return;
+            }
+        }
+
+        LOGGER.info(
+                "Player {} ({}) completed normal online authentication; treating authentication server as recovered",
+                profile.getName(),
+                profile.getId()
+        );
+        authenticationServerRecovered();
+    }
+
     public static void markPendingUnsafe(GameProfile profile) {
         PENDING_UNSAFE_PLAYERS.add(profile.getId());
         LOGGER.warn("Marked {} ({}) as pending unsafe login", profile.getName(), profile.getId());

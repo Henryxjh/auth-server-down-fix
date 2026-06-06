@@ -51,7 +51,11 @@ public class ServerLoginPacketListenerImplMixin {
             InetAddress address
     ) throws AuthenticationUnavailableException {
         try {
-            return sessionService.hasJoinedServer(username, serverId, address);
+            ProfileResult result = sessionService.hasJoinedServer(username, serverId, address);
+            if (result != null) {
+                AuthRecoveryMonitor.onPlayerAuthenticatedNormally(result.profile());
+            }
+            return result;
         } catch (AuthenticationUnavailableException exception) {
             AuthRecoveryMonitor.onAuthenticationUnavailable(sessionService);
             authserverdownfix$LOGGER.info(
