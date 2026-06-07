@@ -28,6 +28,16 @@ Check the current state with:
 /authserverdownfix status
 ```
 
+Manage static fallback profiles with:
+
+```mcfunction
+/authserverdownfix fallbackProfiles add Notch
+/authserverdownfix fallbackProfiles remove Notch
+/authserverdownfix fallbackProfiles list
+```
+
+The `add` command queries the currently configured profile lookup API set and writes the returned name-to-UUID pair to `fallbackProfiles`.
+
 ## Security Boundary
 
 This mod is server-side only. Clients must be able to contact Mojang and complete normal client-side authentication.

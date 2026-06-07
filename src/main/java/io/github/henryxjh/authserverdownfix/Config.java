@@ -1,6 +1,7 @@
 package io.github.henryxjh.authserverdownfix;
 
 import com.mojang.authlib.GameProfile;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -105,12 +106,51 @@ public final class Config {
     }
 
     public static Optional<GameProfile> getFallbackProfile(String username) {
-        return FALLBACK_PROFILES.get().stream()
-                .map(Config::parseFallbackProfile)
-                .flatMap(Optional::stream)
+        return getFallbackProfiles().stream()
                 .filter(profile -> profile.name().equalsIgnoreCase(username))
                 .findFirst()
                 .map(profile -> new GameProfile(profile.uuid(), profile.name()));
+    }
+
+    public static List<GameProfile> getFallbackGameProfiles() {
+        return getFallbackProfiles().stream()
+                .map(profile -> new GameProfile(profile.uuid(), profile.name()))
+                .toList();
+    }
+
+    public static synchronized boolean addOrReplaceFallbackProfile(GameProfile profile) {
+        List<String> entries = new ArrayList<>(getFallbackProfileEntries());
+        String newEntry = formatFallbackProfileEntry(profile);
+        boolean replaced = false;
+
+        for (int index = 0; index < entries.size(); index++) {
+            Optional<FallbackProfile> existingProfile = parseFallbackProfile(entries.get(index));
+            if (existingProfile.isPresent() && existingProfile.get().name().equalsIgnoreCase(profile.getName())) {
+                entries.set(index, newEntry);
+                replaced = true;
+                break;
+            }
+        }
+
+        if (!replaced) {
+            entries.add(newEntry);
+        }
+
+        FALLBACK_PROFILES.set(entries);
+        FALLBACK_PROFILES.save();
+        return replaced;
+    }
+
+    public static synchronized boolean removeFallbackProfile(String username) {
+        List<String> entries = new ArrayList<>(getFallbackProfileEntries());
+        boolean removed = entries.removeIf(entry -> parseFallbackProfile(entry)
+                .map(profile -> profile.name().equalsIgnoreCase(username))
+                .orElse(false));
+        if (removed) {
+            FALLBACK_PROFILES.set(entries);
+            FALLBACK_PROFILES.save();
+        }
+        return removed;
     }
 
     public static int getUnsafePlayerKickDelaySeconds() {
@@ -143,6 +183,24 @@ public final class Config {
 
     private static boolean validateFallbackProfile(Object value) {
         return value instanceof String entry && parseFallbackProfile(entry).isPresent();
+    }
+
+    private static List<String> getFallbackProfileEntries() {
+        return FALLBACK_PROFILES.get().stream()
+                .map(String::trim)
+                .filter(entry -> !entry.isEmpty())
+                .toList();
+    }
+
+    private static List<FallbackProfile> getFallbackProfiles() {
+        return getFallbackProfileEntries().stream()
+                .map(Config::parseFallbackProfile)
+                .flatMap(Optional::stream)
+                .toList();
+    }
+
+    private static String formatFallbackProfileEntry(GameProfile profile) {
+        return profile.getName() + "=" + profile.getId().toString().replace("-", "");
     }
 
     private static Optional<FallbackProfile> parseFallbackProfile(String entry) {

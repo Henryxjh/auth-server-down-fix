@@ -28,6 +28,16 @@ Auth Server Down Fix 是一个适用于 Minecraft 1.21.1 的服务端 NeoForge �
 /authserverdownfix status
 ```
 
+管理静态 fallback profiles：
+
+```mcfunction
+/authserverdownfix fallbackProfiles add Notch
+/authserverdownfix fallbackProfiles remove Notch
+/authserverdownfix fallbackProfiles list
+```
+
+`add` 指令会请求当前配置选择的玩家资料查询 API，并把返回的玩家名称与 UUID 对应关系写入 `fallbackProfiles`。
+
 ## 安全边界
 
 本模组仅安装在服务端。客户端必须能够连接 Mojang，并完成正常的客户端正版验证。
