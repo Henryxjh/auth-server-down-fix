@@ -15,7 +15,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
+import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
@@ -167,6 +171,7 @@ public final class AuthRecoveryMonitor {
                     Config.getUnsafePlayerKickCountdownBroadcast(kickDelaySeconds)
             ).withStyle(ChatFormatting.YELLOW);
             currentServer.getPlayerList().broadcastSystemMessage(message, false);
+            sendKickCountdownSubtitle(currentServer, message, kickDelaySeconds);
         });
         synchronized (MONITOR_LOCK) {
             cancel(kickTask);
@@ -175,6 +180,22 @@ public final class AuthRecoveryMonitor {
                     kickDelaySeconds,
                     TimeUnit.SECONDS
             );
+        }
+    }
+
+    private static void sendKickCountdownSubtitle(MinecraftServer server, Component message, int kickDelaySeconds) {
+        int stayTicks = (int) Math.min(Integer.MAX_VALUE, Math.max(20L, kickDelaySeconds * 20L));
+        ClientboundSetTitlesAnimationPacket animationPacket = new ClientboundSetTitlesAnimationPacket(10, stayTicks, 20);
+        ClientboundSetSubtitleTextPacket subtitlePacket = new ClientboundSetSubtitleTextPacket(message);
+        ClientboundSetTitleTextPacket emptyTitlePacket = new ClientboundSetTitleTextPacket(CommonComponents.EMPTY);
+
+        for (UUID uuid : Set.copyOf(ONLINE_UNSAFE_PLAYERS)) {
+            ServerPlayer player = server.getPlayerList().getPlayer(uuid);
+            if (player != null) {
+                player.connection.send(animationPacket);
+                player.connection.send(subtitlePacket);
+                player.connection.send(emptyTitlePacket);
+            }
         }
     }
 

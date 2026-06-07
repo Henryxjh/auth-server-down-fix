@@ -50,7 +50,7 @@ public final class Config {
             .comment("Broadcast message sent when unsafe login mode is enabled.")
             .define(
                     "unsafeLoginEnabledBroadcast",
-                    "WARNING: Unsafe login mode is enabled. If Mojang authentication servers are unavailable, "
+                    "[Auth Server Down Fix] WARNING: Unsafe login mode is enabled. If Mojang authentication servers are unavailable, "
                             + "players may join without completing live online authentication. Do not grant sensitive "
                             + "permissions while this mode is enabled."
             );
