@@ -201,9 +201,7 @@ public final class AuthRecoveryMonitor {
     }
 
     private static void disconnectUnsafePlayers(MinecraftServer server) {
-        Component reason = Component.literal(
-                "Authentication servers recovered. Reconnect to complete online authentication."
-        );
+        Component reason = Component.literal(Config.getUnsafePlayerKickReason());
         List<String> disconnectedPlayers = new ArrayList<>();
         for (UUID uuid : Set.copyOf(ONLINE_UNSAFE_PLAYERS)) {
             ServerPlayer player = server.getPlayerList().getPlayer(uuid);

@@ -122,7 +122,7 @@ fallbackProfiles = [
 unsafePlayerKickDelaySeconds = 60
 ```
 
-以下广播消息可以配置：
+以下消息可以配置：
 
 ```toml
 unsafeLoginEnabledBroadcast = "..."
@@ -131,6 +131,7 @@ unsafePlayerJoinWarning = "..."
 authenticationRecoveredBroadcast = "..."
 unsafePlayerKickCountdownBroadcast = "... {seconds} ..."
 unsafePlayersKickedBroadcast = "... {players} ..."
+unsafePlayerKickReason = "..."
 ```
 
 ### 手动强制不安全模式启动

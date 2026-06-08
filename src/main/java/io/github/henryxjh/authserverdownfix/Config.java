@@ -100,6 +100,13 @@ public final class Config {
                     "Disconnected unsafe-login players: {players}"
             );
 
+    public static final ModConfigSpec.ConfigValue<String> UNSAFE_PLAYER_KICK_REASON = BUILDER
+            .comment("Disconnect reason shown to unsafe-login players when authentication server connectivity recovers.")
+            .define(
+                    "unsafePlayerKickReason",
+                    "Authentication servers recovered. Reconnect to complete online authentication."
+            );
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private Config() {
@@ -206,6 +213,10 @@ public final class Config {
 
     public static String getUnsafePlayersKickedBroadcast(String players) {
         return UNSAFE_PLAYERS_KICKED_BROADCAST.get().replace("{players}", players);
+    }
+
+    public static String getUnsafePlayerKickReason() {
+        return UNSAFE_PLAYER_KICK_REASON.get();
     }
 
     private static boolean validateCustomProfileApi(Object value) {

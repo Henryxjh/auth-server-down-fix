@@ -122,7 +122,7 @@ fallbackProfiles = [
 unsafePlayerKickDelaySeconds = 60
 ```
 
-The following broadcasts are configurable:
+The following messages are configurable:
 
 ```toml
 unsafeLoginEnabledBroadcast = "..."
@@ -131,6 +131,7 @@ unsafePlayerJoinWarning = "..."
 authenticationRecoveredBroadcast = "..."
 unsafePlayerKickCountdownBroadcast = "... {seconds} ..."
 unsafePlayersKickedBroadcast = "... {players} ..."
+unsafePlayerKickReason = "..."
 ```
 
 ### Manual Unsafe Startup
