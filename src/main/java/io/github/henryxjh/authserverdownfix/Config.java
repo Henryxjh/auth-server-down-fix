@@ -9,12 +9,15 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    private static volatile Boolean effectiveUseCustomProfileApis;
 
     public static final ModConfigSpec.BooleanValue USE_CUSTOM_PROFILE_APIS = BUILDER
+            .gameRestart()
             .comment(
                     "Whether to use custom profile lookup APIs instead of the two official profile lookup APIs.",
                     "If true, only customProfileApis will be used for UUID lookup.",
-                    "If false, only the official Mojang and Minecraft Services APIs will be used for UUID lookup."
+                    "If false, only the official Mojang and Minecraft Services APIs will be used for UUID lookup.",
+                    "Changing this value requires a server restart."
             )
             .define("useCustomProfileApis", false);
 
@@ -94,8 +97,24 @@ public final class Config {
     private Config() {
     }
 
+    public static synchronized void freezeRestartRequiredValues() {
+        if (effectiveUseCustomProfileApis == null) {
+            effectiveUseCustomProfileApis = USE_CUSTOM_PROFILE_APIS.getAsBoolean();
+        }
+    }
+
     public static boolean useCustomProfileApis() {
+        Boolean effectiveValue = effectiveUseCustomProfileApis;
+        return effectiveValue != null ? effectiveValue : USE_CUSTOM_PROFILE_APIS.getAsBoolean();
+    }
+
+    public static boolean getConfiguredUseCustomProfileApis() {
         return USE_CUSTOM_PROFILE_APIS.getAsBoolean();
+    }
+
+    public static boolean isUseCustomProfileApisRestartPending() {
+        Boolean effectiveValue = effectiveUseCustomProfileApis;
+        return effectiveValue != null && effectiveValue != USE_CUSTOM_PROFILE_APIS.getAsBoolean();
     }
 
     public static List<String> getCustomProfileApis() {

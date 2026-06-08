@@ -69,6 +69,16 @@ public class authserverdownfix {
             return;
         }
 
+        if (event instanceof ModConfigEvent.Loading) {
+            Config.freezeRestartRequiredValues();
+        } else if (Config.isUseCustomProfileApisRestartPending()) {
+            LOGGER.warn(
+                    "Auth Server Down Fix useCustomProfileApis was changed to {}, but the active value remains {} until the server restarts",
+                    Config.getConfiguredUseCustomProfileApis(),
+                    Config.useCustomProfileApis()
+            );
+        }
+
         if (Config.useCustomProfileApis()) {
             List<String> customProfileApis = Config.getCustomProfileApis();
             if (customProfileApis.isEmpty()) {
