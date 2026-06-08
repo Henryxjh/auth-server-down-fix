@@ -127,6 +127,7 @@ The following broadcasts are configurable:
 ```toml
 unsafeLoginEnabledBroadcast = "..."
 unsafeLoginDisabledBroadcast = "..."
+unsafePlayerJoinWarning = "..."
 authenticationRecoveredBroadcast = "..."
 unsafePlayerKickCountdownBroadcast = "... {seconds} ..."
 unsafePlayersKickedBroadcast = "... {players} ..."

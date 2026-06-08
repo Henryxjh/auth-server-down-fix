@@ -108,6 +108,7 @@ public final class AuthRecoveryMonitor {
         if (PENDING_UNSAFE_PLAYERS.remove(uuid)) {
             ONLINE_UNSAFE_PLAYERS.add(uuid);
             LOGGER.warn("{} ({}) joined through unsafe UUID lookup", player.getGameProfile().getName(), uuid);
+            player.sendSystemMessage(Component.literal(Config.getUnsafePlayerJoinWarning()).withStyle(ChatFormatting.RED));
         }
     }
 

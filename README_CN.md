@@ -127,6 +127,7 @@ unsafePlayerKickDelaySeconds = 60
 ```toml
 unsafeLoginEnabledBroadcast = "..."
 unsafeLoginDisabledBroadcast = "..."
+unsafePlayerJoinWarning = "..."
 authenticationRecoveredBroadcast = "..."
 unsafePlayerKickCountdownBroadcast = "... {seconds} ..."
 unsafePlayersKickedBroadcast = "... {players} ..."

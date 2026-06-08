@@ -65,6 +65,14 @@ public final class Config {
                     "Unsafe login mode is disabled. Players must complete vanilla online authentication."
             );
 
+    public static final ModConfigSpec.ConfigValue<String> UNSAFE_PLAYER_JOIN_WARNING = BUILDER
+            .comment("Message sent only to a player who joins through unsafe UUID lookup.")
+            .define(
+                    "unsafePlayerJoinWarning",
+                    "[Auth Server Down Fix] WARNING: This server is temporarily unsafe because Mojang authentication "
+                            + "servers are unavailable. Avoid sensitive actions until authentication recovers."
+            );
+
     public static final ModConfigSpec.ConfigValue<String> AUTHENTICATION_RECOVERED_BROADCAST = BUILDER
             .comment("Broadcast message sent when the connection to the Mojang authentication server recovers.")
             .define(
@@ -182,6 +190,10 @@ public final class Config {
 
     public static String getUnsafeLoginDisabledBroadcast() {
         return UNSAFE_LOGIN_DISABLED_BROADCAST.get();
+    }
+
+    public static String getUnsafePlayerJoinWarning() {
+        return UNSAFE_PLAYER_JOIN_WARNING.get();
     }
 
     public static String getAuthenticationRecoveredBroadcast() {
